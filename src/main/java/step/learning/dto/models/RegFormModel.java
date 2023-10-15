@@ -55,6 +55,14 @@ public class RegFormModel {
         if (name == null || "".equals(name)){
             result.put("name","Ім'я не може бути порожнім");
         }
+
+        if (email == null || "".equals(email)){
+            result.put("email","Email не може бути порожнім");
+        }
+
+        if (getBirthdateAsString() == null || "".equals(getBirthdateAsString())){
+            result.put("birthdate","Дата народження не може бути порожньою");
+        }
         return result;
     }
 

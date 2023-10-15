@@ -13,6 +13,8 @@
     Map<String,String> errors = model == null ? new HashMap<String,String>() : model.getErrorMessages();
     String nameClass = model == null ? "validate" : (errors.containsKey("name") ? "invalid" : "valid");
     String loginClass = model == null ? "validate" : (errors.containsKey("login") ? "invalid" : "valid");
+    String emailClass = model == null ? "validate" : (errors.containsKey("email") ? "invalid" : "valid");
+    String dateClass = model == null ? "validate" : (errors.containsKey("birthdate") ? "invalid" : "valid");
     String regMessage = (String) request.getAttribute("reg-message");
     if (regMessage == null) {regMessage = "";}
 %>
@@ -53,13 +55,19 @@
         <div class="row">
             <div class="input-field col s6">
                 <i class="material-icons prefix">email</i>
-                <input value="<%=emailValue%>" name="reg-email" id="reg-email" type="email" class="validate">
+                <input value="<%=emailValue%>" name="reg-email" id="reg-email" type="email" class="<%=emailClass%>">
                 <label for="reg-email">E-mail</label>
+                <%if(errors.containsKey("email")){%>
+                <span class="helper-text" data-error="<%=errors.get("email")%>"></span>
+                <%}%>
             </div>
             <div class="input-field col s6">
                 <i class="material-icons prefix">calendar_today</i>
-                <input value="<%=birthdateValue%>" name="reg-birthdate" id="reg-birthdate" type="date" class="validate">
+                <input value="<%=birthdateValue%>" name="reg-birthdate" id="reg-birthdate" type="date" class="<%=dateClass%>">
                 <label for="reg-birthdate">Дата народження</label>
+                <%if(errors.containsKey("birthdate")){%>
+                <span class="helper-text" data-error="<%=errors.get("birthdate")%>"></span>
+                <%}%>
             </div>
         </div>
         <div class="row">
