@@ -1,5 +1,7 @@
 package step.learning.servlets;
 
+import step.learning.services.db.PlanetDbProvider;
+
 import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +13,8 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //resp.getWriter().print("HomeServlet");
+        PlanetDbProvider dbProvider = new PlanetDbProvider();
+        dbProvider.getConnection();
         req.setAttribute("page-body", "index.jsp");
         req.getRequestDispatcher("WEB-INF/_layout.jsp")
                 .forward(req,resp); // ~ return View()
