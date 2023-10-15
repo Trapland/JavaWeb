@@ -1,29 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
-<%
-    String pageBody = (String) request.getAttribute("page-body");
-    String context = request.getContextPath();
-%>
-<head>
-    <title>Title</title>
-    <title>Title</title>
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!--Import Google Icon Font-->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-</head>
-<body>
-<nav>
-    <div class="nav-wrapper orange lighten-2">
-        <a href="<%=context%>" class="brand-logo right">Java 201</a>
-        <ul id="nav-mobile">
-            <li><a href="<%=context%>/jsp">Sass</a></li>
-            <li><a href="badges.html">Components</a></li>
-            <li><a href="collapsible.html">JavaScript</a></li>
-        </ul>
-    </div>
-</nav>
-<main>
+<h1>JSP</h1>
 JSP (JavaServer Pages) - це технологія Java для створення динамічних веб-сторінок. Вона надає низку потужних можливостей для розробки веб-додатків. Ось конспект основних можливостей JSP:<br><br>
 
 Інтеграція Java і HTML: JSP дозволяє вбудовувати код Java безпосередньо в HTML-сторінки, що спрощує створення динамічного контенту.<br><br>
@@ -58,23 +34,3 @@ JSP (JavaServer Pages) - це технологія Java для створенн�
     Інтеграція з фреймворками: JSP може використовуватися разом з різними Java-фреймворками, такими як Spring, для створення потужних веб-додатків.<br><br>
 
     JSP є потужною та гнучкою технологією для розробки веб-додатків в Java, яка дозволяє створювати динамічні та інтерактивні веб-сайти.<br><br>
-</main>
-    <footer class="page-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col l6 s12">
-                    <h5 class="white-text">Footer Content</h5>
-                    <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            <div class="container">
-                © 2023 Copyright Text
-                <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
-            </div>
-        </div>
-    </footer>
-</body>
-
-</html>
