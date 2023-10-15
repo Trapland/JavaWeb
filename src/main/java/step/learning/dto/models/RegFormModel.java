@@ -22,15 +22,15 @@ public class RegFormModel {
     private String avatar; //filename for avatar
     // endregion
 
-    public RegFormModel(HttpServletRequest request) throws ParseException {
-        this.setName(request.getParameter("reg-name"));
-        this.setLogin(request.getParameter("reg-login"));
-        this.setPassword(request.getParameter("reg-password"));
-        this.setRepeat(request.getParameter("reg-repeat"));
-        this.setEmail(request.getParameter("reg-email"));
-        this.setBirthdate(request.getParameter("reg-birthdate"));
-        this.setAgree(request.getParameter("reg-rules"));
-    }
+//    public RegFormModel(HttpServletRequest request) throws ParseException {
+//        this.setName(request.getParameter("reg-name"));
+//        this.setLogin(request.getParameter("reg-login"));
+//        this.setPassword(request.getParameter("reg-password"));
+//        this.setRepeat(request.getParameter("reg-repeat"));
+//        this.setEmail(request.getParameter("reg-email"));
+//        this.setBirthdate(request.getParameter("reg-birthdate"));
+//        this.setAgree(request.getParameter("reg-rules"));
+//    }
 
     public RegFormModel(FormParseResult result) throws ParseException {
         Map<String,String> fields = result.getFields();
@@ -87,6 +87,15 @@ public class RegFormModel {
         String submitterdFilename = item.getName();
         // Визначити тип файлу (розширення) та перевірити на перелік дозволених
         String ext = submitterdFilename.substring(submitterdFilename.lastIndexOf('.'));
+        if (ext.equals(".png") || ext.equals(".jpg"))
+        {
+
+        }
+        else
+        {
+            this.avatar = null;
+            return;
+        }
         String savedFilename;
         File savedFile;
         do{
