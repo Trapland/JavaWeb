@@ -141,10 +141,12 @@ public class DbServlet extends HttpServlet {
         String status;
         String message;
         String sql = "CREATE TABLE " + dbPrefix + "call_me(" +
-                "id BIGINT PRIMARY KEY," +
-                "name VARCHAR(64) NULL," +
-                "phone CHAR(13) NOT NULL COMMENT '+38 098 765 43 21'," +
-                "moment DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                "`id`             BIGINT      PRIMARY KEY," +
+                "`name`           VARCHAR(64) NULL," +
+                "`phone`          CHAR(13)    NOT NULL COMMENT '+38 098 765 43 21'," +
+                "`moment`         DATETIME    DEFAULT CURRENT_TIMESTAMP" +
+                "`call_moment`    DATETIME    NULL" +
+                "`delete_moment`  DATETIME    NULL" +
                 ") ENGINE = InnoDB DEFAULT CHARSET = UTF8";
         try (Statement statement = dbProvider.getConnection().createStatement()){
             statement.executeUpdate(sql);
@@ -158,6 +160,41 @@ public class DbServlet extends HttpServlet {
         result.addProperty("status",status);
         result.addProperty("message",message);
         resp.getWriter().print(result.toString());
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json");
+        String callId = req.getParameter("call-id");
+        if( callId == null)
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Missing required parameter 'call-id' \"");
+            return;
+        }
+        CallMe item = callMeDao.getById(callId);
+        if(item == null)
+        {
+            resp.setStatus(404);
+            resp.getWriter().print("\"Item not found for given parameter 'call-id' \"");
+            return;
+        }
+        if(item.getDeleteMoment() != null){
+            resp.setStatus(422);
+            resp.getWriter().print("\"Unprocessable Content: Item was processed early \"");
+            return;
+        }
+        if(callMeDao.delete(item)){
+            resp.setStatus(202);
+            resp.getWriter().print("\"Operation completed\"");
+        }
+        else
+        {
+            resp.setStatus(500);
+            resp.getWriter().print("\"Server error. Details on server's logs \"");
+            return;
+        }
+
     }
 
     @Override
@@ -176,8 +213,39 @@ public class DbServlet extends HttpServlet {
         }
     }
 
+    // зафіксувати callMoment
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getWriter().print("Patch works");
+        resp.setContentType("application/json");
+        String callId = req.getParameter("call-id");
+        if( callId == null)
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Missing required parameter 'call-id' \"");
+            return;
+        }
+        CallMe item = callMeDao.getById(callId);
+        if(item == null)
+        {
+            resp.setStatus(404);
+            resp.getWriter().print("\"Item not found for given parameter 'call-id' \"");
+            return;
+        }
+        if(item.getCallMoment() != null){
+            resp.setStatus(422);
+            resp.getWriter().print("\"Unprocessable Content: Item was processed early \"");
+            return;
+        }
+        if(callMeDao.updateCallMoment(item)){
+            resp.setStatus(202);
+            resp.getWriter().print(new Gson().toJson(item));
+        }
+        else
+        {
+            resp.setStatus(500);
+            resp.getWriter().print("\"Server error. Details on server's logs \"");
+            return;
+        }
+        //resp.getWriter().print("Patch works");
     }
 
     protected void doCopy(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

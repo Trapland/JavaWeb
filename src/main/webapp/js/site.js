@@ -45,16 +45,54 @@ function readButtonClick(){
     }).then(r => r.json()).then(showCalls);
 }
 function showCalls(j){
-    var table = "<table><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th></tr>";
+    var table = '<table class="striped"><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th><th>delete</th></tr>';
     for (let call of j){
         let m = ( typeof call.callMoment == 'undefined' || call.callMoment == null ) ?
             `<button data-id="${call.id}" onclick="callClick(event)">call</button>` :  call.callMoment ;
-        table += `<tr><td>${call.id}</td><td>${call.name}</td><td>${call.phone}</td><td>${m}</td></tr>`;
+
+        let d = `<button class="btn orange lighten-2" data-id="${call.id}" onclick="deleteClick(event)"><i class="material-icons red-text">remove</i></button>`;
+        table += `<tr><td>${call.id}</td><td>${call.name}</td><td>${call.phone}</td><td>${m}</td><td>${d}</td></tr>`;
     }
     table+= "</table>";
     document.getElementById("calls-container").innerHTML = table;
 }
 
+function deleteClick(e){
+    const btn = e.target.closest('button');
+    const callId = btn.getAttribute("data-id");
+    if(confirm(`DELETE ORDER NUMBER ${callId}` )){
+        fetch(window.location.href + "?call-id=" + callId, {
+            method: 'DELETE',
+        }).then(r => {
+            if(r.status === 202){ // успішне видалення
+                let tr =
+                    btn          // button
+                    .parentNode  // td
+                    .parentNode; // tr
+                tr.parentNode.removeChild(tr);
+            }
+            else{
+                r.json().then(alert);
+            }
+        });
+    }
+}
+
 function callClick(e){
-    alert('CALLING id= ' + e.target.getAttribute("data-id"));
+    const callId = e.target.getAttribute("data-id");
+    if(confirm(`MAKE CALL FOR ORDER NUMBER= ${callId}` )){
+        fetch(window.location.href + "?call-id=" + callId, {
+            method: 'PATCH',
+        }).then(r => r.json()).then(j => {
+            if(typeof j.callMoment == 'undefined') // j - текст помилки
+            {
+                alert(j);
+            }
+            else {
+                //прибираємо кнопку та ставимо дату
+                e.target.parentNode.innerHTML = j.callMoment;
+            }
+            console.log(j);
+        });
+    }
 }
