@@ -225,10 +225,10 @@ public class DbServlet extends HttpServlet {
         switch (req.getMethod().toUpperCase())
         {
             case "PATCH": doPatch(req,resp); break;
-            //case "PURGE":break;
+            case "PURGE": doPurge(req,resp); break;
             case "LINK": doLink(req,resp); break;
             //case "UNLINK":break;
-            //case "MOVE":break;
+            case "MOVE": doMove(req,resp); break;
             case "COPY": doCopy(req,resp); break;
             default: super.service(req, resp);
         }
@@ -307,6 +307,44 @@ public class DbServlet extends HttpServlet {
         if(callMeDao.updateCallMoment(item)){
             resp.setStatus(202);
             resp.getWriter().print(new Gson().toJson(item));
+        }
+        else
+        {
+            resp.setStatus(500);
+            resp.getWriter().print("\"Server error. Details on server's logs \"");
+            return;
+        }
+    }
+
+    protected void doPurge(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<CallMe> calls = callMeDao.getAll(true);
+        Gson gson = new GsonBuilder().create();
+        resp.getWriter().print(gson.toJson(calls));
+    }
+    protected void doMove(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+        resp.setContentType("application/json");
+        String callId = req.getParameter("call-id");
+        if( callId == null)
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Missing required parameter 'call-id' \"");
+            return;
+        }
+        CallMe item = callMeDao.getById(callId,true);
+        if(item == null)
+        {
+            resp.setStatus(404);
+            resp.getWriter().print("\"Item not found for given parameter 'call-id' \"");
+            return;
+        }
+        if(item.getDeleteMoment() == null){
+            resp.setStatus(422);
+            resp.getWriter().print("\"Unprocessable Content: Item was processed early \"");
+            return;
+        }
+        if(callMeDao.restore(item)){
+            resp.setStatus(202);
+            resp.getWriter().print("\"Operation completed\"");
         }
         else
         {

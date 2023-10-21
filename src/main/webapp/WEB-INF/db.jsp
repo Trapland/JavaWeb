@@ -38,6 +38,7 @@
 </p>
 <div class="row">
     <button id="db-read-button" class="waves-effect waves-light btn orange lighten-2"><i class="material-icons right">view_list</i>Переглянути замовлення</button>
+    <button id="db-show-all-button" class="waves-effect waves-light btn orange lighten-2"><i class="material-icons right">view_list</i>Переглянути усі замовлення</button>
 </div>
 <div id="calls-container">
 

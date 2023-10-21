@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded',function (){
     if(insertButton) insertButton.addEventListener('click',insertButtonClick);
     const readButton = document.getElementById("db-read-button");
     if(readButton) readButton.addEventListener('click',readButtonClick);
+    const showAllButton = document.getElementById("db-show-all-button");
+    if(showAllButton) showAllButton.addEventListener('click',showAllButtonClick);
 });
 
 function createButtonClick(){
@@ -109,6 +111,58 @@ function callClick(e){
                 e.target.parentNode.innerHTML = j.callMoment;
             }
             console.log(j);
+        });
+    }
+}
+function showCalls(j){
+    var table = '<table class="material-table"><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th><th>delete</th></tr>';
+    for (let call of j){
+        let m = ( typeof call.callMoment == 'undefined' || call.callMoment == null ) ?
+            `<button data-id="${call.id}" onclick="callClickLink(event)">call</button>` :  call.callMoment ;
+
+        let d = `<button class="btn orange lighten-2" data-id="${call.id}" onclick="deleteClick(event)"><i class="material-icons red-text">delete</i></button>`;
+        table += `<tr><td>${call.id}</td><td>${call.name}</td><td>${call.phone}</td><td>${m}</td><td>${d}</td></tr>`;
+    }
+    table+= "</table>";
+    document.getElementById("calls-container").innerHTML = table;
+}
+
+function showAllButtonClick(e){
+    fetch(window.location.href,{
+        method: "PURGE"
+    }).then(r => r.json()).then(showAllCalls);
+}
+function showAllCalls(j){
+    var table = '<table class="material-table"><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th><th>deleteMoment</th><th>restore</th></tr>';
+    for (let call of j){
+        let m = ( typeof call.callMoment == 'undefined' || call.callMoment == null ) ?
+            `<button data-id="${call.id}" onclick="callClickLink(event)">call</button>` :  call.callMoment ;
+
+        let r = ( typeof call.deleteMoment == 'undefined' || call.deleteMoment == null ) ?
+            "Not Deleted" : `<button class="btn green lighten-2" data-id="${call.id}" onclick="restoreClick(event)"><i class="material-icons">restore</i></button>`;
+        table += `<tr><td>${call.id}</td><td>${call.name}</td><td>${call.phone}</td><td>${m}</td><td>${call.deleteMoment}</td><td>${r}</td></tr>`;
+    }
+    table+= "</table>";
+    document.getElementById("calls-container").innerHTML = table;
+}
+
+function restoreClick(e){
+    const btn = e.target.closest('button');
+    const callId = btn.getAttribute("data-id");
+    if(confirm(`RESTORE ORDER NUMBER ${callId}` )){
+        fetch(window.location.href + "?call-id=" + callId, {
+            method: 'MOVE',
+        }).then(r => {
+            if(r.status === 202){ // успішне видалення
+                let tr =
+                    btn          // button
+                        .parentNode  // td
+                        .parentNode; // tr
+                tr.parentNode.removeChild(tr);
+            }
+            else{
+                r.json().then(alert);
+            }
         });
     }
 }
