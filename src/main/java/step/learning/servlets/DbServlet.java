@@ -226,7 +226,7 @@ public class DbServlet extends HttpServlet {
         {
             case "PATCH": doPatch(req,resp); break;
             //case "PURGE":break;
-            //case "LINK":break;
+            case "LINK": doLink(req,resp); break;
             //case "UNLINK":break;
             //case "MOVE":break;
             case "COPY": doCopy(req,resp); break;
@@ -280,5 +280,39 @@ public class DbServlet extends HttpServlet {
 
 
         //resp.getWriter().print("Copy works");
+    }
+
+    protected void doLink(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    {
+        resp.setContentType("application/json");
+        String callId = req.getParameter("call-id");
+        if( callId == null)
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Missing required parameter 'call-id' \"");
+            return;
+        }
+        CallMe item = callMeDao.getById(callId);
+        if(item == null)
+        {
+            resp.setStatus(404);
+            resp.getWriter().print("\"Item not found for given parameter 'call-id' \"");
+            return;
+        }
+        if(item.getCallMoment() != null){
+            resp.setStatus(422);
+            resp.getWriter().print("\"Unprocessable Content: Item was processed early \"");
+            return;
+        }
+        if(callMeDao.updateCallMoment(item)){
+            resp.setStatus(202);
+            resp.getWriter().print(new Gson().toJson(item));
+        }
+        else
+        {
+            resp.setStatus(500);
+            resp.getWriter().print("\"Server error. Details on server's logs \"");
+            return;
+        }
     }
 }

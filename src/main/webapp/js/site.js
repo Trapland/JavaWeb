@@ -48,7 +48,7 @@ function showCalls(j){
     var table = '<table class="material-table"><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th><th>delete</th></tr>';
     for (let call of j){
         let m = ( typeof call.callMoment == 'undefined' || call.callMoment == null ) ?
-            `<button data-id="${call.id}" onclick="callClick(event)">call</button>` :  call.callMoment ;
+            `<button data-id="${call.id}" onclick="callClickLink(event)">call</button>` :  call.callMoment ;
 
         let d = `<button class="btn orange lighten-2" data-id="${call.id}" onclick="deleteClick(event)"><i class="material-icons red-text">remove</i></button>`;
         table += `<tr><td>${call.id}</td><td>${call.name}</td><td>${call.phone}</td><td>${m}</td><td>${d}</td></tr>`;
@@ -73,6 +73,22 @@ function deleteClick(e){
             }
             else{
                 r.json().then(alert);
+            }
+        });
+    }
+}
+function callClickLink(e){
+    const callId = e.target.getAttribute("data-id");
+    if(confirm(`MAKE CALL FOR ORDER NUMBER= ${callId}` )){
+        fetch(window.location.href + "?call-id=" + callId, {
+            method: 'LINK',
+        }).then(r => r.json()).then(j => {
+            if(typeof j.callMoment == 'undefined')
+            {
+
+            }
+            else {
+                e.target.parentNode.innerHTML = j.callMoment;
             }
         });
     }
