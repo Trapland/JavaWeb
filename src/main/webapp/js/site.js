@@ -45,7 +45,7 @@ function readButtonClick(){
     }).then(r => r.json()).then(showCalls);
 }
 function showCalls(j){
-    var table = '<table class="striped"><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th><th>delete</th></tr>';
+    var table = '<table class="material-table"><tr><th>id</th><th>name</th><th>phone</th><th>callMoment</th><th>delete</th></tr>';
     for (let call of j){
         let m = ( typeof call.callMoment == 'undefined' || call.callMoment == null ) ?
             `<button data-id="${call.id}" onclick="callClick(event)">call</button>` :  call.callMoment ;
