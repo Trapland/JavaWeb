@@ -98,6 +98,8 @@ public class DbServlet extends HttpServlet {
             return;
         }
         String name,phone;
+
+
         try {
             name = data.get("name").getAsString();
             phone = data.get("phone").getAsString();
@@ -107,6 +109,25 @@ public class DbServlet extends HttpServlet {
             resp.getWriter().print("\"Invalid JSON data: required 'name' and 'phone' fields \"");
             return;
         }
+        if(name.isEmpty() && phone.isEmpty())
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Validation error: fields name and phone are empty\"");
+            return;
+        }
+        if(name.isEmpty())
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Validation error: field name is empty\"");
+            return;
+        }
+        if(phone.isEmpty())
+        {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Validation error: field phone is empty\"");
+            return;
+        }
+
         if (!Pattern.matches("^\\+38\\s?(\\(\\d{3}\\)|\\d{3})\\s?\\d{3}(-|\\s)?\\d{2}(-|\\s)?\\d{2}$",phone))
         {
             resp.setStatus(400);
