@@ -27,6 +27,8 @@
             <li><a href="<%=context%>/filters">Filters</a></li>
             <li><a href="<%=context%>/ioc">IoC</a></li>
             <li><a href="<%=context%>/db">DB</a></li>
+            <li><a href="<%=context%>/spa">SPA</a></li>
+
         </ul>
     </div>
 </nav>
@@ -55,11 +57,21 @@
 <div id="auth-modal" class="modal">
     <div class="modal-content">
         <h4>Автентифікація на сайті</h4>
-        <p>A bunch of text</p>
+        <div class="input-field col s6">
+            <i class="material-icons prefix">badge</i>
+            <input id="auth-login" type="text">
+            <label for="auth-login">Логін</label>
+        </div>
+        <div class="input-field col s6">
+            <i class="material-icons prefix">lock</i>
+            <input id="auth-password" type="password" class="validate">
+            <label for="auth-password">Пароль</label>
+        </div>
     </div>
     <div class="modal-footer">
+        <b id="auth-message"></b>
         <a href="<%=context%>/signup" class="modal-close waves-effect waves-green btn-flat orange lighten-1">Реєстрація</a>
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat orange lighten-2">Вхід</a>
+        <button id="auth-sign-in" class="modal-close waves-effect waves-green btn-flat orange lighten-2">Вхід</button>
     </div>
 </div>
 </body>
@@ -67,5 +79,7 @@
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <!-- Site JS -->
-<script src="<%=context%>/js/site.js?time=<%= new Date().getTime()%>"></script>
+<script src="<%=context%>/js/site.js"></script>
+<script src="<%=context%>/js/spa.js?time=<%= new Date().getTime()%>"></script>
+
 </html>

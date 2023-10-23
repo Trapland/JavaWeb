@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class RandomServiceV1 implements RandomService {
     private String iv ;
-    private final Random random ;
+    private Random random ;
 
     public RandomServiceV1() {
         random = new Random() ;
@@ -26,6 +26,6 @@ public class RandomServiceV1 implements RandomService {
     @Override
     public void seed( String iv ) {
         this.iv = iv ;
-        random.setSeed( iv == null ? 0 : iv.length() ) ;
+        random.setSeed( iv == null ? 0 : random.nextInt() ); ;
     }
 }
