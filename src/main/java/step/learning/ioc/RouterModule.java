@@ -18,7 +18,7 @@ public class RouterModule extends ServletModule {
         serve("/jsp").with(JspServlet.class);
         serve("/filters").with(FiltersServlet.class);
         serve("/signup").with(SignupServlet.class);
-        serve("spa").with(SpaServlet.class);
+        serve("/spa").with(SpaServlet.class);
 
     }
 }

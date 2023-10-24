@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import step.learning.dao.AuthTokenDao;
 import step.learning.dao.UserDao;
+import step.learning.dto.entities.AuthToken;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,8 +33,13 @@ public class AuthServlet extends HttpServlet {
         String password = req.getParameter("password");
         if(login == null || login.isEmpty() || password == null){
             sendResponse (resp,400,"Missing required parametres: login and/or password");
-
         }
+        AuthToken authToken = authTokenDao.getTokenByCredentials(login,password);
+        if(authToken == null){
+            sendResponse(resp,401,"Auth rejected for given login and/or password");
+            return;
+        }
+        resp.getWriter().print(gson.toJson(authToken));
     }
     private void sendResponse( HttpServletResponse resp, int status,Object body) throws IOException {
         resp.setContentType("application/json");

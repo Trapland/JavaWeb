@@ -12,12 +12,35 @@
     else {
         console.error("auth-sign-in not found");
     }
+    const spaTokenStatus = document.getElementById("spa-token-status");
+    if(spaTokenStatus){
+        const jti = window.localStorage.getItem('jti');
+        spaTokenStatus.innerText = (!!jti) ? 'Встановлено ' + jti : 'Не встановлено';
+        if(jti){
+            fetch('tpl/spa-auth.html')
+                .then(r=>r.text()).then(t =>
+            document.querySelector('auth-part').innerHTML = t);
+            document.getElementById("spa-log-out")
+                .addEventListener('click',logoutClick);
+        }
+    }
+    const spaGetDataButton = document.getElementById("spa-get-data");
+    if (spaGetDataButton) spaGetDataButton.addEventListener('click', spaGetDataClick);
 });
 function onModalOpens(){
     [authLogin,authPassword,authMessage] = getAuthElements();
     authLogin.value = "";
     authPassword.value = "";
     authMessage.innerText = "";
+}
+
+function spaGetDataClick(){
+    console.log('spaGetDataClick');
+}
+
+function logoutClick(){
+    window.localStorage.removeItem('jti');
+    window.location.reload();
 }
 
 function authSignInButtonClick(){
@@ -29,7 +52,20 @@ const appContext = window.location.pathname.split('/')[1];
 
     fetch(`/${appContext}/auth?login=${authLogin.value}&password=${authPassword.value}`,{
         method:'GET'
-    }).then(console.log);
+    }).then(r => {
+        if(r.status !== 200){
+            authMessage.innerText = "Автентифікацію відхилено";
+        }
+        else {
+            r.json().then(j => {
+                if (typeof j.jti === 'undefined') {
+                    authMessage.innerText = "Помилка одержання токену"
+                    returnö
+                }
+                window.localStorage.setItem('jti', j.jti);
+            })
+        }
+    });
 }
 
 function getAuthElements(){
