@@ -14,10 +14,14 @@
     }
     const spaTokenStatus = document.getElementById("spa-token-status");
     if(spaTokenStatus){
-        const jti = window.localStorage.getItem('jti');
-        spaTokenStatus.innerText = (!!jti) ? 'Встановлено ' + jti : 'Не встановлено';
-        if(jti){
-            fetch('tpl/spa-auth.html')
+        const token = window.localStorage.getItem('token');
+        spaTokenStatus.innerText = (!!token) ? 'Встановлено ' + token : 'Не встановлено';
+        if(token){
+            const tokenObject = JSON.parse(atob(token));
+            spaTokenStatus.innerText = "Дійсний до " + tokenObject.exp;
+            const appContext = getAppContext();
+
+            fetch(`${appContext}/tpl/spa-auth.html`)
                 .then(r=>r.text()).then(t =>
             document.querySelector('auth-part').innerHTML = t);
             document.getElementById("spa-log-out")
@@ -34,12 +38,15 @@ function onModalOpens(){
     authMessage.innerText = "";
 }
 
+function getAppContext(){
+    return '/' + window.location.pathname.split('/')[1];
+}
 function spaGetDataClick(){
     console.log('spaGetDataClick');
 }
 
 function logoutClick(){
-    window.localStorage.removeItem('jti');
+    window.localStorage.removeItem('token');
     window.location.reload();
 }
 
@@ -48,21 +55,32 @@ function authSignInButtonClick(){
     if(authLogin.value.length === 0){
         authMessage.innerText = "Логін не може бути порожнім";
     }
-const appContext = window.location.pathname.split('/')[1];
+const appContext = getAppContext();
 
-    fetch(`/${appContext}/auth?login=${authLogin.value}&password=${authPassword.value}`,{
+    fetch(`${appContext}/auth?login=${authLogin.value}&password=${authPassword.value}`,{
         method:'GET'
     }).then(r => {
         if(r.status !== 200){
             authMessage.innerText = "Автентифікацію відхилено";
         }
         else {
-            r.json().then(j => {
-                if (typeof j.jti === 'undefined') {
+            r.text().then(base64encodedText => {
+                console.log(base64encodedText);
+
+                const token = JSON.parse(atob(base64encodedText));
+                if (typeof token.jti === 'undefined') {
                     authMessage.innerText = "Помилка одержання токену"
-                    returnö
+                    return;
                 }
-                window.localStorage.setItem('jti', j.jti);
+                window.localStorage.setItem('token', base64encodedText);
+                if(appContext.includes("spa"))
+                {
+                    window.location.reload();
+                }
+                else
+                {
+                    window.location.replace(getAppContext() + "/spa");
+                }
             })
         }
     });

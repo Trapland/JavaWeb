@@ -2,6 +2,7 @@ package step.learning.servlets;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import javafx.scene.layout.Background;
 import step.learning.dao.AuthTokenDao;
 import step.learning.dao.UserDao;
 import step.learning.dto.entities.AuthToken;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;
 
 @Singleton
 public class AuthServlet extends HttpServlet {
@@ -39,7 +41,10 @@ public class AuthServlet extends HttpServlet {
             sendResponse(resp,401,"Auth rejected for given login and/or password");
             return;
         }
-        resp.getWriter().print(gson.toJson(authToken));
+        String json = gson.toJson(authToken);
+        String base64code = Base64.getUrlEncoder().encodeToString(json.getBytes());
+        resp.setContentType("text/plain");
+        resp.getWriter().print(base64code);
     }
     private void sendResponse( HttpServletResponse resp, int status,Object body) throws IOException {
         resp.setContentType("application/json");
