@@ -30,6 +30,12 @@
     }
     const spaGetDataButton = document.getElementById("spa-get-data");
     if (spaGetDataButton) spaGetDataButton.addEventListener('click', spaGetDataClick);
+    const spaGetDataButton2 = document.getElementById("spa-get-data2");
+    if (spaGetDataButton2) spaGetDataButton2.addEventListener('click', spaGetDataClick2);
+    const spaGetDataButton3 = document.getElementById("spa-get-data3");
+    if (spaGetDataButton3) spaGetDataButton3.addEventListener('click', spaGetDataClick3);
+    const spaGetDataButton4 = document.getElementById("spa-get-data4");
+    if (spaGetDataButton4) spaGetDataButton4.addEventListener('click', spaGetDataClick4);
 });
 function onModalOpens(){
     [authLogin,authPassword,authMessage] = getAuthElements();
@@ -43,6 +49,31 @@ function getAppContext(){
 }
 function spaGetDataClick(){
     console.log('spaGetDataClick');
+    fetch(`${getAppContext()}/tpl/spa-auth.html`)
+        .then(r=>r.text()).then(t =>
+        document.querySelector('auth-part').innerHTML = t);
+}
+function spaGetDataClick2(){
+    console.log('spaGetDataClick2');
+    fetch(`${getAppContext()}/tpl/figures.html`)
+        .then(r=>r.text()).then(t =>
+        document.querySelector('auth-part').innerHTML = t);
+}
+function spaGetDataClick3(){
+    console.log('spaGetDataClick3');
+    fetch(`${getAppContext()}/tpl/table.html`)
+        .then(r=>r.text()).then(t =>
+        document.querySelector('auth-part').innerHTML = t);
+}
+function spaGetDataClick4(){
+    console.log('spaGetDataClick4');
+    fetch(`${getAppContext()}/tpl/test.html`)
+        .then(r=>{
+            if(r.status === 404)
+            {
+                document.querySelector('auth-part').innerHTML = `error 404<br/>`;
+            }
+        })
 }
 
 function logoutClick(){

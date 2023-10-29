@@ -15,3 +15,6 @@
 <auth-part></auth-part>
 <button id="spa-log-out" class="btn orange lighten-1"><i class="material-icons">logout</i></button>
 <button id="spa-get-data" class="btn orange lighten-2"><i class="material-icons">folder</i></button>
+<button id="spa-get-data2" class="btn orange lighten-2"><i class="material-icons">folder</i></button>
+<button id="spa-get-data3" class="btn orange lighten-2"><i class="material-icons">folder</i></button>
+<button id="spa-get-data4" class="btn orange lighten-2"><i class="material-icons">folder</i></button>
