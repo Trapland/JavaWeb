@@ -1,5 +1,7 @@
 package step.learning.dao;
 
+import com.google.gson.JsonParser;
+import org.checkerframework.checker.units.qual.A;
 import step.learning.dto.entities.AuthToken;
 import step.learning.dto.entities.User;
 import step.learning.services.db.DbProvider;
@@ -8,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.sql.*;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -50,6 +53,31 @@ public class AuthTokenDao {
             prep.setTimestamp   (4, new Timestamp(authToken.getExp().getTime()));
             prep.executeUpdate();
             return authToken;
+        }
+        catch (SQLException ex){
+            logger.log(Level.WARNING, ex.getMessage() + "---" + sql);
+        }
+        return null;
+    }
+
+    public AuthToken getTokenByBearer(String bearer){
+        String jti;
+        try {
+            jti = JsonParser.parseString(
+                    new String(Base64.getUrlDecoder().decode(bearer.getBytes()))).getAsJsonObject().get("jti").getAsString();
+        }
+        catch (Exception ex){
+            System.err.println("bearer parse error: " + ex.getMessage() + " " + bearer);
+            return null;
+        }
+        String sql = "SELECT BIN_TO_UUID(t.jti) AS jti, t.sub, t.iat, t.exp FROM " + dbPrefix + "auth_tokens t " +
+                " WHERE t.jti = UUID_TO_BIN(?) AND t.exp > CURRENT_TIMESTAMP ";
+        try (PreparedStatement prep = dbProvider.getConnection().prepareStatement(sql)){
+            prep.setString(1,jti);
+            ResultSet resultSet = prep.executeQuery();
+            if (resultSet.next()){
+                return new AuthToken(resultSet);
+            }
         }
         catch (SQLException ex){
             logger.log(Level.WARNING, ex.getMessage() + "---" + sql);

@@ -21,7 +21,12 @@
             spaTokenStatus.innerText = "Дійсний до " + tokenObject.exp;
             const appContext = getAppContext();
 
-            fetch(`${appContext}/tpl/spa-auth.html`)
+            fetch(`${appContext}/tpl/spa-auth.html`,{
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
                 .then(r=>r.text()).then(t =>
             document.querySelector('auth-part').innerHTML = t);
             document.getElementById("spa-log-out")
@@ -48,26 +53,50 @@ function getAppContext(){
     return '/' + window.location.pathname.split('/')[1];
 }
 function spaGetDataClick(){
-    console.log('spaGetDataClick');
-    fetch(`${getAppContext()}/tpl/spa-auth.html`)
-        .then(r=>r.text()).then(t =>
-        document.querySelector('auth-part').innerHTML = t);
+    fetch(`${getAppContext()}/tpl/NP.png`,{
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+        }
+    })
+        .then(r=>r.blob()).then(b =>
+    {
+        const blobUrl = URL.createObjectURL(b);
+        document.querySelector('auth-part').innerHTML +=
+        `<img src="${blobUrl}" width="100"/>`;
+
+    });
 }
 function spaGetDataClick2(){
     console.log('spaGetDataClick2');
-    fetch(`${getAppContext()}/tpl/figures.html`)
+    fetch(`${getAppContext()}/tpl/figures.html`,{
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+        }
+    })
         .then(r=>r.text()).then(t =>
         document.querySelector('auth-part').innerHTML = t);
 }
 function spaGetDataClick3(){
     console.log('spaGetDataClick3');
-    fetch(`${getAppContext()}/tpl/table.html`)
+    fetch(`${getAppContext()}/tpl/table.html`,{
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+        }
+    })
         .then(r=>r.text()).then(t =>
         document.querySelector('auth-part').innerHTML = t);
 }
 function spaGetDataClick4(){
     console.log('spaGetDataClick4');
-    fetch(`${getAppContext()}/tpl/test.html`)
+    fetch(`${getAppContext()}/tpl/test.html`,{
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+        }
+    })
         .then(r=>{
             if(r.status === 404)
             {
