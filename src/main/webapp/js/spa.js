@@ -62,7 +62,7 @@ function spaGetDataClick(){
         .then(r=>r.blob()).then(b =>
     {
         const blobUrl = URL.createObjectURL(b);
-        document.querySelector('auth-part').innerHTML +=
+        document.querySelector('auth-part').innerHTML =
         `<img src="${blobUrl}" width="100"/>`;
 
     });
