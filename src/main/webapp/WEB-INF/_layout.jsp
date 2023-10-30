@@ -28,6 +28,7 @@
             <li><a href="<%=context%>/ioc">IoC</a></li>
             <li><a href="<%=context%>/db">DB</a></li>
             <li><a href="<%=context%>/spa">SPA</a></li>
+            <li><a href="<%=context%>/ws">WS</a></li>
 
         </ul>
     </div>

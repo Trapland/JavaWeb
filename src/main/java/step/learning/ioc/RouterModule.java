@@ -20,6 +20,7 @@ public class RouterModule extends ServletModule {
         serve("/signup").with(SignupServlet.class);
         serve("/spa").with(SpaServlet.class);
         serve("/tpl/*").with(TemplatesServlet.class);
+        serve("/ws").with(WsServlet.class);
 
     }
 }
