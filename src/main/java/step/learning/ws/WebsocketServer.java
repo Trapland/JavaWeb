@@ -1,7 +1,10 @@
 package step.learning.ws;
 
-import org.checkerframework.checker.units.qual.C;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import step.learning.dao.AuthTokenDao;
 import step.learning.dao.ChatDao;
+import step.learning.dto.entities.AuthToken;
 import step.learning.dto.entities.ChatMessage;
 
 import javax.inject.Inject;
@@ -23,10 +26,13 @@ public class WebsocketServer {
             Collections.synchronizedSet(new HashSet<>());
     private final ChatDao chatDao;
 
+    private final AuthTokenDao authTokenDao;
+
 
     @Inject
-    public WebsocketServer(ChatDao chatDao) {
+    public WebsocketServer(ChatDao chatDao, AuthTokenDao authTokenDao) {
         this.chatDao = chatDao;
+        this.authTokenDao = authTokenDao;
     }
 
     @OnOpen
@@ -46,25 +52,63 @@ public class WebsocketServer {
 
     @OnMessage
     public void onMessage(String message, Session session){
-        String user = session.getUserProperties().get("user").toString();
-        executor.execute(() ->
-        {
-            chatDao.add(new ChatMessage(user, message));
-        });
-        sendToAll(user + ": " + message);
+        JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
+        String command = jsonObject.get("command").getAsString();
+        String data = jsonObject.get("data").getAsString();
+        switch (command){
+            case "auth":
+                AuthToken authToken = authTokenDao.getTokenByBearer(data);
+                if(authToken == null){
+                    sendToSession(session,403,"token rejected");
+                }
+                else {
+                    session.getUserProperties().put("auth", authToken.getSub());
+                    session.getUserProperties().put("nik", authToken.getNik());
+
+                    sendToSession(session,202,authToken.getNik());
+                }
+                break;
+            case "chat":
+                String sub = (String) session.getUserProperties().get("auth"); // user id
+                String nik = (String) session.getUserProperties().get("nik"); // user
+
+                if(sub == null)
+                {
+                    sendToSession(session,401,"Auth required");
+                }
+                else{
+                    executor.execute(() ->
+                    {
+                        chatDao.add(new ChatMessage(sub, data)); // user   data
+                    });
+                    sendToAll(201,nik + ": " + data); // user   data
+                }
+                break;
+            default:
+                break;
+        }
+
 
     }
     @OnError
     public void onError(Throwable ex, Session session){
         System.err.println("onError " + ex.getMessage());
     }
-    private void sendToAll(String message){
+    private void sendToSession(Session session,int status ,String data){
+        JsonObject respObject = new JsonObject();
+        respObject.addProperty("status",status);
+        respObject.addProperty("data",data);
+
+        try {
+            session.getBasicRemote().sendText(respObject.toString());
+        } catch (IOException ex) {
+
+            System.err.println( "sendToSession " + ex.getMessage());
+        }
+    }
+    private void sendToAll(int status,String data){
         for (Session session : sessions){
-            try {
-                session.getBasicRemote().sendText(message);
-            } catch (IOException ex) {
-                System.err.println( "sendToAll " + ex.getMessage());
-            }
+            sendToSession(session,status,data);
         }
     }
 }

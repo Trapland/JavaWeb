@@ -10,6 +10,7 @@ public class AuthToken {
     private String sub; //user id
     private Date exp; // expires
     private Date iat; // issued at
+    private String nik; // getter only - navigation
 
     public AuthToken() {
     }
@@ -22,6 +23,14 @@ public class AuthToken {
         this.setExp(moment == null ? null : new Date(moment.getTime()));
         moment = resultSet.getTimestamp("iat");
         this.setIat(moment == null ? null : new Date(moment.getTime()));
+        try {
+            this.nik = resultSet.getString("nik");
+        }
+        catch (Exception ignored){}
+    }
+
+    public String getNik() {
+        return nik;
     }
 
     public String getJti() {
